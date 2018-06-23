@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1561.2">
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <div> SeaRos team sprint capacity</div>
+
+    <div> # days
+      <input type="number" v-model="days">
+    </div>
+    <div> avg velocity
+      <input type="number" v-model="avg">
+    </div>
+    Seattle
+    <ol>
+      <li v-for="dev in seattle">
+        {{ dev.name }}
+        <input type="number" v-model="dev.days">
+      </li>
+    </ol>
+    <div>Capacity: {{ getCapacity(true)}}%</div>
+    <div>Points to take: {{ getPoints(true)}}</div>
+    <br> Rosario
+    <ol>
+      <li v-for="dev in rosario">
+        {{ dev.name }}
+        <input type="number" v-model="dev.days">
+      </li>
+    </ol>
+    <div>Capacity: {{ getCapacity(false)}} %</div>
+    <div>Points to take: {{ getPoints(false)}}</div>
+
+  </div>
+
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        message: 'Hello Vue!',
+        seattle: [
+          { name: 'satie', days: 10 },
+          { name: 'david', days: 10 },
+          { name: 'karthi', days: 10 },
+          { name: 'steve', days: 10 }
+        ],
+        capacityRosario: '',
+        capacitySeattle: '',
+        rosario: [
+          { name: 'salim', days: 10 },
+          { name: 'ivan', days: 10 },
+          { name: 'gise', days: 10 },
+          { name: 'renzo', days: 10 }],
+        days: 10,
+        avg: 20
+      },
+      methods: {
+        getPoints: function (isSeattle) {
+          var avg = this.$data.avg / 2;
+          var capacity = isSeattle ? this.$data.capacitySeattle : this.$data.capacityRosario;
+          return (isNaN(capacity) ? 0 : avg * (capacity / 100)).toFixed(2);
+        },
+        getCapacity: function (isSeattle) {
+          var capactity = 0;
+          var devs = isSeattle ? this.$data.seattle : this.$data.rosario;
+          var days = this.$data.days;
+
+          var totalDays = days * devs.length;
+          var daysDevs = 0;
+          devs.forEach(dev => {
+            daysDevs = parseInt(daysDevs) + parseInt(dev.days);
+          });
+          var capacityResult = (daysDevs / totalDays) * 100;
+          if (isSeattle)
+            this.$data.capacitySeattle = capacityResult;
+          else
+            this.$data.capacityRosario = capacityResult;
+
+          return capacityResult.toFixed(2);
+        }
+      }
+    })
+  </script>
+  <style>
+    .row {
+      width: 30%;
+      display: flex;
+    }
+
+    input[type=number] {
+      width: 35px;
+    }
+
+    .column {
+      flex: 20%;
+    }
+  </style>
+</body>
+
+</html>
