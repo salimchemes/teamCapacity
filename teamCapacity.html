@@ -37,34 +37,38 @@
       <li v-for="dev in rosario">
         {{ dev.name }}
         <input type="number" v-model="dev.days">
+        <button @click='remove(dev)'>remove</button>
       </li>
     </ol>
+    <div>
+      <button>add dev</button>
+      <input type='text' placeholder="name"></input>
+      <input type='number' placeholder="days"></input>
+    </div>
     <div>Capacity: {{ getCapacity(false)}} %</div>
     <div>Points to take: {{ getPoints(false)}}</div>
-
   </div>
-
 
   <script>
     var app = new Vue({
       el: '#app',
       data: {
-        message: 'Hello Vue!',
+        days: 10,
+        avg: 20,
         seattle: [
-          { name: 'satie', days: 10 },
-          { name: 'david', days: 10 },
-          { name: 'karthi', days: 10 },
-          { name: 'steve', days: 10 }
+          { name: 'satie', days: '' },
+          { name: 'david', days: '' },
+          { name: 'karthi', days: '' },
+          { name: 'steve', days: '' }
         ],
         capacityRosario: '',
         capacitySeattle: '',
         rosario: [
-          { name: 'salim', days: 10 },
-          { name: 'ivan', days: 10 },
-          { name: 'gise', days: 10 },
-          { name: 'renzo', days: 10 }],
-        days: 10,
-        avg: 20
+          { name: 'salim', days: '' },
+          { name: 'ivan', days: '' },
+          { name: 'gise', days: '' },
+          { name: 'renzo', days: '' }],
+
       },
       methods: {
         getPoints: function (isSeattle) {
@@ -89,7 +93,17 @@
             this.$data.capacityRosario = capacityResult;
 
           return capacityResult.toFixed(2);
+        },
+        remove: function (dev) {
+          alert(dev.name);
         }
+
+      },
+      mounted: function () {
+        this.$nextTick(function () {
+          this.$data.seattle.forEach(dev => dev.days = this.$data.days);
+          this.$data.rosario.forEach(dev => dev.days = this.$data.days);
+        })
       }
     })
   </script>
@@ -100,7 +114,7 @@
     }
 
     input[type=number] {
-      width: 35px;
+      width: 38px;
     }
 
     .column {
