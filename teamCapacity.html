@@ -8,6 +8,13 @@
   <title></title>
   <meta name="Generator" content="Cocoa HTML Writer">
   <meta name="CocoaVersion" content="1561.2">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
   <style type="text/css">
   </style>
 </head>
@@ -15,39 +22,56 @@
 <body>
 
   <div id="app" class='main-div'>
-    <h2> SeaRos team sprint capacity</h2>
+    <h2>
+      <img src="https://is2-ssl.mzstatic.com/image/thumb/Purple128/v4/14/55/50/145550cf-6703-48d8-7964-00ae9cbccf0a/AppIcon-1x_U007emarketing-85-220-0-3.png/246x0w.jpg"
+      /> SeaRos team sprint capacity
 
-    <div> # days
-      <input type="number" v-model="days">
+    </h2>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <input type="number" v-model="days">
+            <label for="days">#days</label>
+          </div>
+          <div class="input-field col s6">
+            <input type="number" v-model="avg">
+            <label for="avg">velocity avg</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            Seattle
+            <ol>
+              <li v-for="dev in seattle">
+                <div>
+                  {{ dev.name }}
+                  <input type="number" v-model="dev.days">
+                </div>
+              </li>
+            </ol>
+            <div class="input-field col s2 bold">Capacity: {{ getCapacity(true)}}</div>
+            <div class="input-field col s3 bold">Points to take: {{ getPoints(true)}}</div>
+          </div>
+          <div class="input-field col s6">
+            Rosario
+            <ol>
+              <li v-for="dev in rosario">
+                {{ dev.name }}
+                <input type="number" v-model="dev.days">
+              </li>
+            </ol>
+            <div class="input-field col s2 bold">Capacity: {{ getCapacity(false)}}</div>
+            <div class="input-field col s3 bold">Points to take: {{ getPoints(false)}}</div>
+          </div>
+        </div>
+      </form>
     </div>
-    <div> avg velocity
-      <input type="number" v-model="avg">
-    </div>
-    Seattle
-    <ol>
-      <li v-for="dev in seattle">
-        {{ dev.name }}
-        <input type="number" v-model="dev.days">
-      </li>
-    </ol>
-    <div>Capacity: {{ getCapacity(true)}}%</div>
-    <div>Points to take: {{ getPoints(true)}}</div>
-    <br> Rosario
-    <ol>
-      <li v-for="dev in rosario">
-        {{ dev.name }}
-        <input type="number" v-model="dev.days">
-        <button @click='remove(dev)'>remove</button>
-      </li>
-    </ol>
-    <div>
-      <button>add dev</button>
-      <input type='text' placeholder="name"></input>
-      <input type='number' placeholder="days"></input>
-    </div>
-    <div>Capacity: {{ getCapacity(false)}} %</div>
-    <div>Points to take: {{ getPoints(false)}}</div>
   </div>
+
+
+
+
 
   <script>
     var app = new Vue({
@@ -56,18 +80,18 @@
         days: 10,
         avg: 20,
         seattle: [
-          { name: 'satie', days: '' },
-          { name: 'david', days: '' },
-          { name: 'karthi', days: '' },
-          { name: 'steve', days: '' }
+          { name: 'Satie Nijjar', days: '' },
+          { name: 'David Kelly', days: '' },
+          { name: 'Sai Karthika Talla', days: '' },
+          { name: 'Steven Nickerson', days: '' }
         ],
         capacityRosario: '',
         capacitySeattle: '',
         rosario: [
-          { name: 'salim', days: '' },
-          { name: 'ivan', days: '' },
-          { name: 'gise', days: '' },
-          { name: 'renzo', days: '' }],
+          { name: 'Salim Chemes', days: '' },
+          { name: 'Ivan Falletti', days: '' },
+          { name: 'Gisela Vivas', days: '' },
+          { name: 'Renzo Guastavino', days: '' }],
 
       },
       methods: {
@@ -92,7 +116,7 @@
           else
             this.$data.capacityRosario = capacityResult;
 
-          return capacityResult.toFixed(2);
+          return isNaN(capacityResult) ? "(*) days" : capacityResult.toFixed(2) + "  %";
         },
         remove: function (dev) {
           alert(dev.name);
@@ -108,21 +132,13 @@
     })
   </script>
   <style>
-    .row {
-      width: 30%;
-      display: flex;
+    .bold {
+      font-weight: bold;
     }
 
-    input[type=number] {
-      width: 38px;
-    }
-
-    .column {
-      flex: 20%;
-    }
-
-    .main-div {
-      margin-left: 10px;
+    img {
+      border-radius: 50%;
+      width: 55px;
     }
   </style>
 </body>
