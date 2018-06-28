@@ -45,8 +45,8 @@
                 </div>
               </li>
             </ol>
-            <div class="input-field col s2 bold">Capacity: {{ getCapacity(true)}}</div>
-            <div class="input-field col s3 bold">Points to take: {{ getPoints(true)}}</div>
+            <div class="input-field col s4 bold">Capacity: {{ getCapacity(true)}}</div>
+            <div class="input-field col s4 bold">Points to take: {{ getPoints(true)}}</div>
           </div>
           <div class="input-field col s6">
             Rosario
@@ -56,8 +56,8 @@
                 <input type="number" v-model="dev.days">
               </li>
             </ol>
-            <div class="input-field col s2 bold">Capacity: {{ getCapacity(false)}}</div>
-            <div class="input-field col s3 bold">Points to take: {{ getPoints(false)}}</div>
+            <div class="input-field col s4 bold">Capacity: {{ getCapacity(false)}}</div>
+            <div class="input-field col s4 bold">Points to take: {{ getPoints(false)}}</div>
           </div>
         </div>
       </form>
@@ -111,7 +111,7 @@
           else
             this.$data.capacityRosario = capacityResult;
 
-          return isNaN(capacityResult) ? "(*) days" : capacityResult.toFixed(2) + "  %";
+          return isNaN(capacityResult) ? "(*) days" : capacityResult.toFixed(2) + "%";
         },
         remove: function (dev) {
           alert(dev.name);
