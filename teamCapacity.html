@@ -11,6 +11,9 @@
   <meta name="CocoaVersion" content="1561.2">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuejs-datepicker"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style type="text/css">
   </style>
@@ -25,11 +28,19 @@
     <div class="row">
       <form class="col s12">
         <div class="row">
-          <div class="input-field col s6">
+          <div class="input-field col s4">
+            <div>
+              <vuejs-datepicker placeholder="Select Date" v-model="dateFrom" @closed="dateFromChange"></vuejs-datepicker>
+            </div>
+            <div>
+              <label for="date">to</label> {{ dateTo }}
+            </div>
+          </div>
+          <div class="input-field col s4">
             <input type="number" v-model="days">
             <label for="days">#days</label>
           </div>
-          <div class="input-field col s6">
+          <div class="input-field col s4">
             <input type="number" v-model="avg">
             <label for="avg">velocity avg</label>
           </div>
@@ -63,17 +74,17 @@
       </form>
     </div>
   </div>
-
-
-
-
-
   <script>
     var app = new Vue({
       el: '#app',
+      components: {
+        vuejsDatepicker
+      },
       data: {
         days: 10,
         avg: 20,
+        dateFrom: moment().format("L"),
+        dateTo: moment().add(2, 'weeks').add(-1, "days").format("L"),
         seattle: [
           { name: 'Satie Nijjar', days: '' },
           { name: 'David Kelly', days: '' },
@@ -90,6 +101,9 @@
 
       },
       methods: {
+        dateFromChange: function () {
+          this.$data.dateTo = moment(this.dateFrom).add(2, 'weeks').add(-1, "days").format("L");
+        },
         getPoints: function (isSeattle) {
           var avg = this.$data.avg / 2;
           var capacity = isSeattle ? this.$data.capacitySeattle : this.$data.capacityRosario;
@@ -122,7 +136,7 @@
         this.$nextTick(function () {
           this.$data.seattle.forEach(dev => dev.days = this.$data.days);
           this.$data.rosario.forEach(dev => dev.days = this.$data.days);
-        })
+        });
       }
     })
   </script>
