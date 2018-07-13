@@ -188,7 +188,7 @@
         });
 
         axios
-          .get('http://localhost:5001/lawyer-f1b6d/us-central1/holidays')
+          .get('https://us-central1-lawyer-f1b6d.cloudfunctions.net/holidays')
           .then(response => {
             response.data.forEach(x => {
               x.formatedDate = moment(new Date(x.year, x.month - 1, x.day)).format("M/D")
