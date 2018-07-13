@@ -64,9 +64,17 @@
             <label for="avg">velocity avg</label>
           </div>
         </div>
+        <div class="row" style="margin-bottom:0% !important;">
+          <div class="input-field col s3 bold">Capacity: {{ getCapacity(true)}}</div>
+          <div class="input-field col s3 bold">Points to take: {{ getPoints(true)}}</div>
+
+          <div class="input-field col s3 bold">Capacity: {{ getCapacity(false)}}</div>
+          <div class="input-field col s3 bold">Points to take: {{ getPoints(false)}}</div>
+        </div>
         <div class="row">
+
           <div class="input-field col s6">
-            Seattle
+            <h4>Seattle</h4>
             <ol>
               <li v-for="dev in seattle">
                 <div>
@@ -84,11 +92,10 @@
                 <strong>{{ r.formatedDate }}</strong> - {{ r.name }}
               </li>
             </ol>
-            <div class="input-field col s3 bold">Capacity: {{ getCapacity(true)}}</div>
-            <div class="input-field col s3 bold">Points to take: {{ getPoints(true)}}</div>
           </div>
+
           <div class="input-field col s6">
-            Rosario
+            <h4>Rosario</h4>
             <ol>
               <li v-for="dev in rosario">
                 {{ dev.name }}
@@ -102,8 +109,6 @@
                 <strong>{{ r.formatedDate }}</strong> - {{ r.name }}
               </li>
             </ol>
-            <div class="input-field col s3 bold">Capacity: {{ getCapacity(false)}}</div>
-            <div class="input-field col s3 bold">Points to take: {{ getPoints(false)}}</div>
           </div>
         </div>
       </form>
