@@ -150,17 +150,7 @@
       },
       methods: {
         dateFromChange: function () {
-          var d_from = this.$data.dateFrom;
-          var d_to = moment(this.dateFrom).add(2, 'weeks').add(-1, "days");
-          this.$data.dateTo = d_to.format("L");
-          this.$data.holidaysRosario = this.$data.holidays.filter(function (h) {
-            var holiDate = new Date(h.year, h.month - 1, h.day);
-            return (h.country == "arg" && holiDate >= d_from && holiDate <= d_to);
-          });
-          this.$data.holidaysSeattle = this.$data.holidays.filter(function (h) {
-            var holiDate = new Date(h.year, h.month - 1, h.day);
-            return (h.country == "us" && holiDate >= d_from && holiDate <= d_to);
-          });
+          this.filterHolidays();
         },
         getPoints: function (isSeattle) {
           var avg = this.$data.avg / 2;
@@ -184,6 +174,19 @@
             this.$data.capacityRosario = capacityResult;
 
           return isNaN(capacityResult) ? "(*) days" : capacityResult.toFixed(2) + "  %";
+        },
+        filterHolidays: function () {
+          var d_from = this.$data.dateFrom;
+          var d_to = moment(this.dateFrom).add(2, 'weeks').add(-1, "days");
+          this.$data.dateTo = d_to.format("L");
+          this.$data.holidaysRosario = this.$data.holidays.filter(function (h) {
+            var holiDate = new Date(h.year, h.month - 1, h.day);
+            return (h.country == "arg" && holiDate >= d_from && holiDate <= d_to);
+          });
+          this.$data.holidaysSeattle = this.$data.holidays.filter(function (h) {
+            var holiDate = new Date(h.year, h.month - 1, h.day);
+            return (h.country == "us" && holiDate >= d_from && holiDate <= d_to);
+          });
         }
       },
       mounted: function () {
@@ -199,20 +202,8 @@
               x.formatedDate = moment(new Date(x.year, x.month - 1, x.day)).format("M/D")
             });
             this.$data.holidays = response.data;
-
-            var d_from = this.$data.dateFrom;
-            var d_to = moment(this.dateFrom).add(2, 'weeks').add(-1, "days");
-            this.$data.dateTo = d_to.format("L");
-            this.$data.holidaysRosario = this.$data.holidays.filter(function (h) {
-              var holiDate = new Date(h.year, h.month - 1, h.day);
-              return (h.country == "arg" && holiDate >= d_from && holiDate <= d_to);
-            });
-            this.$data.holidaysSeattle = this.$data.holidays.filter(function (h) {
-              var holiDate = new Date(h.year, h.month - 1, h.day);
-              return (h.country == "us" && holiDate >= d_from && holiDate <= d_to);
-            });
-            console.log(this.$data.holidays);
-
+            debugger
+            this.filterHolidays();
           });
       }
     })
