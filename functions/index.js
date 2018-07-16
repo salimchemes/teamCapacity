@@ -43,7 +43,7 @@ exports.holidays = functions.https.onRequest((request, response) => {
             month: 9,
             name: 'Labor day',
             country: 'us',
-            date: new Date(1, 1, 2018)            
+            date: new Date(1, 1, 2018)
         },
         {
             day: 12,
@@ -51,7 +51,7 @@ exports.holidays = functions.https.onRequest((request, response) => {
             year: 2018,
             name: "Veteran's day",
             country: 'us',
-            date: new Date(1, 1, 2018)            
+            date: new Date(1, 1, 2018)
         }, {
             day: 22,
             month: 11,
@@ -221,4 +221,23 @@ exports.holidays = functions.https.onRequest((request, response) => {
     ]
     response.send(holidays);
 
+});
+
+exports.devs = functions.https.onRequest((request, response) => {
+    var devs = [
+        { name: 'Satie Nijjar', days: '', country: 'us' },
+        { name: 'David Kelly', days: '', country: 'us' },
+        { name: 'Sai Karthika Talla', days: '', country: 'us' },
+        { name: 'Steven Nickerson', days: '', country: 'us' },
+        { name: 'Salim Chemes', days: '', country: 'arg' },
+        { name: 'Ivan Falletti', days: '', country: 'arg' },
+        { name: 'Gisela Vivas', days: '', country: 'arg' },
+        { name: 'Renzo Guastavino', days: '', country: 'arg' }
+    ]
+    response.send(devs);
+});
+
+exports.teamData = functions.https.onRequest((request, response) => {
+    var teamData = [{ avg: 20 }];
+    response.send(teamData);
 });
