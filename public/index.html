@@ -47,94 +47,104 @@
     <div class="row">
       <form class="col s12">
         <dates-days-avg></dates-days-avg>
-        <!-- <capacity-and-points></capacity-and-points> -->
-        <!-- <div class="row" style="margin-bottom:0% !important;">
-          <div class="input-field col s3 bold">Capacity: {{ getCapacity(true)}}</div>
-          <div class="input-field col s3 bold">Points to take: {{ getPoints(true)}}</div>
 
-          <div class="input-field col s3 bold">Capacity: {{ getCapacity(false)}}</div>
-          <div class="input-field col s3 bold">Points to take: {{ getPoints(false)}}</div>
-        </div> -->
+        <capacity-and-points></capacity-and-points>
         <div class="row">
+
           <div class="input-field col s6">
             <dev-list city="Seattle"></dev-list>
             <holidays-list city="Seattle"></holidays-list>
-            <!-- <span v-if="holidaysSeattle.length==0"> No holidays </span>
-            <span v-else> Holidays Seattle: </span>
-            <ol>
-              <li v-for="r in holidaysSeattle">
-                <strong>{{ r.formatedDate }}</strong> - {{ r.name }}
-              </li>
-            </ol> -->
           </div>
 
           <div class="input-field col s6">
             <dev-list city="Rosario"></dev-list>
             <holidays-list city="Rosario"></holidays-list>
-
-            <!-- <span v-if="holidaysRosario.length==0"> No holidays </span>
-            <span v-else> Holidays Rosario: </span>
-            <ol>
-              <li v-for="r in holidaysRosario">
-                <strong>{{ r.formatedDate }}</strong> - {{ r.name }}
-              </li>
-            </ol> -->
           </div>
+
         </div>
       </form>
     </div>
   </div>
 
+  <script> 
 
+    var store = {
+      state: {
+        days: 10,
+        avg: 20,
+        dateFrom: moment().format("L"),
+        dateTo: moment().add(2, 'weeks').add(-1, "days").format("L"),
+        devsRosario: [],
+        devsSeattle: [],
+        holidaysSeattle: [],
+        holidaysRosario: [],
+        holidays: []
+      },
+      updateHolidays() {
+        var d_from = this.$data.sharedState.dateFrom;
+        var d_to = moment(this.$data.sharedState.dateFrom).add(2, 'weeks').add(-1, "days");
+        this.$data.sharedState.holidaysSeattle = this.$data.sharedState.holidays.filter(function (h) {
 
+          var holiDate = new Date(h.year, h.month - 1, h.day);
+          return (h.country == 'us' && holiDate >= d_from && holiDate <= d_to);
+        });
 
+        this.$data.sharedState.holidaysRosario = this.$data.sharedState.holidays.filter(function (h) {
 
-  <script>
+          var holiDate = new Date(h.year, h.month - 1, h.day);
+          return (h.country == 'arg' && holiDate >= d_from && holiDate <= d_to);
+        });
+      }
+
+    }
     Vue.component("dates-days-avg", {
       components: {
         vuejsDatepicker
       },
       data: function () {
         return {
-          days: 10,
-          avg: 20,
-          dateFrom: moment().format("L"),
-          dateTo: moment().add(2, 'weeks').add(-1, "days").format("L"),
+          sharedState: store.state
         }
       },
       mounted: function () {
-        var d_from = this.$data.dateFrom;
-        var d_to = moment(this.dateFrom).add(2, 'weeks').add(-1, "days");
-        this.$data.dateTo = d_to.format("L");
- 
+        this.formatDates();
+
         axios
           .get('https://us-central1-lawyer-f1b6d.cloudfunctions.net/teamData')
           .then(response => {
-            this.$data.avg = response.data[0].avg;
+            this.$data.sharedState.avg = response.data[0].avg;
           });
 
       },
       methods: {
+        formatDates: function () {
+          var d_from = this.$data.sharedState.dateFrom;
+          var d_to = moment(this.$data.sharedState.dateFrom).add(2, 'weeks').add(-1, "days");
+          this.$data.sharedState.dateFrom = d_from;
+          this.$data.sharedState.dateTo = d_to.format("L");
+          this.updateHolidays();
+        },
         dateFromChange: function () {
-          this.filterHolidays();
-        }
+          this.formatDates();
+        },
+        updateHolidays: store.updateHolidays
       },
       template: `
       <div class="row" style="margin-bottom:0% !important;">
           <div class="input-field col s4">
             <div>
-              <vuejs-datepicker placeholder="Select Date" v-model="dateFrom" @closed="dateFromChange"></vuejs-datepicker>
+              <vuejs-datepicker placeholder="Select Date" v-model="sharedState.dateFrom" @closed="dateFromChange"></vuejs-datepicker>
             </div>
             <div>
-              <label for="date">to</label> {{ dateTo }}
+              <label for="date">to</label> {{ sharedState.dateTo }}
             </div>
           </div>
           <div class="input-field col s4">
-            <input type="number" v-model="days" :prop1="days">
+            <input type="number" v-model="sharedState.days">
             <label for="days">#days</label>
           </div>
           <div class="input-field col s4">
-            <input type="number" v-model="avg">
+            <input type="number" v-model="sharedState.avg">
             <label for="avg">velocity avg</label>
           </div>
         </div>      
@@ -143,21 +153,24 @@
     Vue.component("capacity-and-points", {
       data: function () {
         return {
-          capacityRosario: '',
-          capacitySeattle: '',
+          sharedState: store.state,
+          privateState: {
+            capacityRosario: '',
+            capacitySeattle: ''
+          }
         }
       },
+
       methods: {
         getPoints: function (isSeattle) {
-          debugger
-          var avg = this.$data.avg / 2;
-          var capacity = isSeattle ? this.$data.capacitySeattle : this.$data.capacityRosario;
+          var avg = this.$data.sharedState.avg / 2;
+          var capacity = isSeattle ? this.$data.privateState.capacitySeattle : this.$data.privateState.capacityRosario;
           return (isNaN(capacity) ? 0 : avg * (capacity / 100)).toFixed(2);
         },
         getCapacity: function (isSeattle) {
           var capactity = 0;
-          var devs = isSeattle ? this.$data.seattle : this.$data.rosario;
-          var days = this.$data.days;
+          var devs = isSeattle ? this.$data.sharedState.devsSeattle : this.$data.sharedState.devsRosario;
+          var days = this.$data.sharedState.days;
 
           var totalDays = days * devs.length;
           var daysDevs = 0;
@@ -166,9 +179,9 @@
           });
           var capacityResult = (daysDevs / totalDays) * 100;
           if (isSeattle)
-            this.$data.capacitySeattle = capacityResult;
+            this.$data.privateState.capacitySeattle = capacityResult;
           else
-            this.$data.capacityRosario = capacityResult;
+            this.$data.privateState.capacityRosario = capacityResult;
 
           return isNaN(capacityResult) ? "(*) days" : capacityResult.toFixed(2) + "  %";
         }
@@ -183,24 +196,38 @@
       props: ['city'],
       data: function () {
         return {
-          days: 10,
-          devs: [],
+          sharedState: store.state
         }
       },
       mounted: function () {
-        var filter = this.$props.city == 'Seattle' ? 'us' : 'arg';;
+        var filter = this.$props.city == 'Seattle' ? 'us' : 'arg';
         axios
           .get('https://us-central1-lawyer-f1b6d.cloudfunctions.net/devs')
           .then(response => {
-            this.$data.devs = response.data.filter(function (dev) { return dev.country == filter })
-            this.$data.devs.forEach(dev => dev.days = this.$data.days);
+            this.$data.sharedState.devsSeattle = response.data.filter(function (dev) { return dev.country == "us" })
+            this.$data.sharedState.devsSeattle.forEach(dev => dev.days = this.$data.sharedState.days);
+
+            this.$data.sharedState.devsRosario = response.data.filter(function (dev) { return dev.country == "arg" })
+            this.$data.sharedState.devsRosario.forEach(dev => dev.days = this.$data.sharedState.days);
+
           });
       },
       template: `
-      <div>
+      <div v-if="city == 'Seattle'">
         <h4>{{ city }}</h4>
             <ol>
-              <li v-for="dev in devs">
+              <li v-for="dev in sharedState.devsSeattle">
+                <div>
+                  {{ dev.name }}
+                  <input type="number" v-model="dev.days">
+                </div>
+              </li>
+            </ol>
+      </div>
+      <div v-else>
+        <h4>{{ city }}</h4>
+            <ol>
+              <li v-for="dev in sharedState.devsRosario">
                 <div>
                   {{ dev.name }}
                   <input type="number" v-model="dev.days">
@@ -214,87 +241,48 @@
       props: { city: String },
       data: function () {
         return {
-          holidays: [],
+          sharedState: store.state,
         }
       },
+      methods: {
+        updateHolidays: store.updateHolidays
+      },
       mounted: function () {
-        debugger
         var country = this.$props.city == "Seattle" ? "us" : "arg";
+
         axios
           .get('https://us-central1-lawyer-f1b6d.cloudfunctions.net/holidays')
           .then(response => {
             response.data.forEach(x => {
               x.formatedDate = moment(new Date(x.year, x.month - 1, x.day)).format("M/D")
             });
-            this.$data.holidays = response.data.filter(function (h) { return h.country == country });
+            this.$data.sharedState.holidays = response.data;
+            this.updateHolidays();
           });
       },
       template: `
-      <div>
-      <span v-if="holidays.length==0"> No holidays </span>
+      <div v-if="city == 'Seattle'">
+      <span v-if="sharedState.holidaysSeattle.length==0"> No holidays </span>
             <span v-else> Holidays {{ city }}: </span>
             <ol>
-              <li v-for="r in holidays">
+              <li v-for="r in sharedState.holidaysSeattle">
                 <strong>{{ r.formatedDate }}</strong> - {{ r.name }}
               </li>
             </ol>
-        </div> `
+        </div>
+        <div v-else>
+        <span v-if="sharedState.holidaysRosario.length==0"> No holidays </span>
+            <span v-else> Holidays {{ city }}: </span>
+            <ol>
+              <li v-for="r in sharedState.holidaysRosario">
+                <strong>{{ r.formatedDate }}</strong> - {{ r.name }}
+              </li>
+            </ol>
+        </div>
+         `
     })
     var app = new Vue({
-      el: '#app',
-      data: {
-        capacityRosario: '',
-        capacitySeattle: '',
-      },
-      methods: {
-        getPoints: function (isSeattle) {
-          var avg = this.$data.avg / 2;
-          var capacity = isSeattle ? this.$data.capacitySeattle : this.$data.capacityRosario;
-          return (isNaN(capacity) ? 0 : avg * (capacity / 100)).toFixed(2);
-        },
-        getCapacity: function (isSeattle) {
-          var capactity = 0;
-          var devs = isSeattle ? this.$data.seattle : this.$data.rosario;
-          var days = this.$data.days;
-
-          var totalDays = days * devs.length;
-          var daysDevs = 0;
-          devs.forEach(dev => {
-            daysDevs = parseInt(daysDevs) + parseInt(dev.days);
-          });
-          var capacityResult = (daysDevs / totalDays) * 100;
-          if (isSeattle)
-            this.$data.capacitySeattle = capacityResult;
-          else
-            this.$data.capacityRosario = capacityResult;
-
-          return isNaN(capacityResult) ? "(*) days" : capacityResult.toFixed(2) + "  %";
-        },
-        filterHolidays: function () {
-          var d_from = this.$data.dateFrom;
-          var d_to = moment(this.dateFrom).add(2, 'weeks').add(-1, "days");
-          this.$data.dateTo = d_to.format("L");
-          this.$data.holidaysRosario = this.$data.holidays.filter(function (h) {
-            var holiDate = new Date(h.year, h.month - 1, h.day);
-            return (h.country == "arg" && holiDate >= d_from && holiDate <= d_to);
-          });
-          this.$data.holidaysSeattle = this.$data.holidays.filter(function (h) {
-            var holiDate = new Date(h.year, h.month - 1, h.day);
-            return (h.country == "us" && holiDate >= d_from && holiDate <= d_to);
-          });
-        }
-      },
-      mounted: function () {
-        axios
-          .get('https://us-central1-lawyer-f1b6d.cloudfunctions.net/holidays')
-          .then(response => {
-            response.data.forEach(x => {
-              x.formatedDate = moment(new Date(x.year, x.month - 1, x.day)).format("M/D")
-            });
-            this.$data.holidays = response.data;
-            this.filterHolidays();
-          });
-      }
+      el: '#app'
     })
   </script>
   <style>
