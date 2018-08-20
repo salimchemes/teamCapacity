@@ -24,16 +24,16 @@
   <meta name="CocoaVersion" content="1561.2">
 
   <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
   <script src="https://unpkg.com/vue"></script>
   <script src="https://unpkg.com/vuejs-datepicker"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
- 
+
 </head>
 
 <body>
@@ -93,7 +93,7 @@
           var holiDate = new Date(h.year, h.month - 1, h.day);
           return (h.country == 'arg' && holiDate >= d_from && holiDate <= d_to);
         });
-      } 
+      }
     }
     Vue.component("dates-days-avg", {
       components: {
@@ -255,6 +255,7 @@
               x.formatedDate = moment(new Date(x.year, x.month - 1, x.day)).format("M/D")
             });
             this.$data.sharedState.holidays = response.data;
+            console.log(this.$data.sharedState.holidays);
             this.updateHolidays();
           });
       },

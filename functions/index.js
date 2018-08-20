@@ -43,6 +43,7 @@ exports.holidays = functions.https.onRequest((request, response) => {
             }, {
                 day: 3,
                 month: 9,
+                year: 2018,
                 name: 'Labor day',
                 country: 'us',
                 date: new Date(1, 1, 2018)
@@ -234,7 +235,7 @@ exports.devs = functions.https.onRequest((request, response) => {
             { name: 'Sai Karthika Talla', days: '', country: 'us' },
             { name: 'Steven Nickerson', days: '', country: 'us' },
             { name: 'Salim Chemes', days: '', country: 'arg' },
-            { name: 'Ivan Falletti', days: '', country: 'arg' },
+            { name: 'Iván Falletti', days: '', country: 'arg' },
             { name: 'Gisela Vivas', days: '', country: 'arg' },
             { name: 'Renzo Guastavino', days: '', country: 'arg' }
         ]
@@ -243,7 +244,7 @@ exports.devs = functions.https.onRequest((request, response) => {
 });
 
 exports.teamData = functions.https.onRequest((request, response) => {
-    cors(request, response, () => { 
+    cors(request, response, () => {
         var teamData = [{ avg: 20 }];
         response.send(teamData);
     })
