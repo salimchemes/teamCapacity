@@ -34,6 +34,11 @@
   <script src="https://unpkg.com/vuejs-datepicker"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5/dist/vue.min.js"></script>
+  <!-- Lastly add this package -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-loading-overlay@2"></script>
+  <link href="https://cdn.jsdelivr.net/npm/vue-loading-overlay@2/dist/vue-loading.min.css" rel="stylesheet">
+  <!-- Init the plugin -->
 </head>
 
 <body>
@@ -67,6 +72,7 @@
   </div>
 
   <script>
+    Vue.use(VueLoading)
     var store = {
       state: {
         days: 10,
@@ -80,18 +86,25 @@
         holidays: []
       },
       updateHolidays() {
-        var d_from = this.$data.sharedState.dateFrom;
+        var d_from = new Date(this.$data.sharedState.dateFrom);
         var d_to = moment(this.$data.sharedState.dateFrom).add(2, 'weeks').add(-1, "days");
         this.$data.sharedState.holidaysSeattle = this.$data.sharedState.holidays.filter(function (h) {
-
           var holiDate = new Date(h.year, h.month - 1, h.day);
           return (h.country == 'us' && holiDate >= d_from && holiDate <= d_to);
         });
 
         this.$data.sharedState.holidaysRosario = this.$data.sharedState.holidays.filter(function (h) {
-
           var holiDate = new Date(h.year, h.month - 1, h.day);
           return (h.country == 'arg' && holiDate >= d_from && holiDate <= d_to);
+        });
+      },
+      updateDevDays() {
+        this.$data.sharedState.devsRosario.forEach(x => {
+          x.days = this.$data.sharedState.days - this.$data.sharedState.holidaysRosario.length;
+        });
+
+        this.$data.sharedState.devsSeattle.forEach(x => {
+          x.days = this.$data.sharedState.days - this.$data.sharedState.holidaysSeattle.length;
         });
       }
     }
@@ -121,11 +134,13 @@
           this.$data.sharedState.dateFrom = d_from;
           this.$data.sharedState.dateTo = d_to.format("L");
           this.updateHolidays();
+          this.updateDevDays();
         },
         dateFromChange: function () {
           this.formatDates();
         },
-        updateHolidays: store.updateHolidays
+        updateHolidays: store.updateHolidays,
+        updateDevDays: store.updateDevDays
       },
       template: `
       <div class="row" style="margin-bottom:0% !important;">
@@ -138,7 +153,7 @@
             </div>
           </div>
           <div class="input-field col s4">
-            <input type="number" v-model="sharedState.days">
+            <input type="number" v-model="sharedState.days" :disabled=true>
             <label for="days">#days</label>
           </div>
           <div class="input-field col s4">
@@ -197,22 +212,24 @@
           sharedState: store.state
         }
       },
+      methods: {
+        updateDevDays: store.updateDevDays
+      },
       mounted: function () {
+        let loader = this.$loading.show();
         var filter = this.$props.city == 'Seattle' ? 'us' : 'arg';
         axios
           .get('https://us-central1-lawyer-f1b6d.cloudfunctions.net/devs')
           .then(response => {
-            this.$data.sharedState.devsSeattle = response.data.filter(function (dev) { return dev.country == "us" })
-            this.$data.sharedState.devsSeattle.forEach(dev => dev.days = this.$data.sharedState.days);
-
-            this.$data.sharedState.devsRosario = response.data.filter(function (dev) { return dev.country == "arg" })
-            this.$data.sharedState.devsRosario.forEach(dev => dev.days = this.$data.sharedState.days);
-
+            this.$data.sharedState.devsSeattle = response.data.filter(function (dev) { return dev.country == "us" });
+            this.$data.sharedState.devsRosario = response.data.filter(function (dev) { return dev.country == "arg" });
+            this.updateDevDays();
+            loader.hide();
           });
       },
       template: `
       <div v-if="city == 'Seattle'">
-        <h4>{{ city }}</h4>
+        <h4>{{ city }}</h4> 
             <ol>
               <li v-for="dev in sharedState.devsSeattle">
                 <div>
